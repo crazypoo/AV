@@ -1,7 +1,7 @@
 # AV
 AV资源查找，播放app
 
-# 小白教程（前提需要装有osx系统的电脑，或者Mac）
+# 小白教程（前提需要装有osx系统的电脑，或者装有osx的Mac）
 # 1.从osx系统的app store上下载xcode,并且运行一次.
 # 2.点击 clone and download，然后点击download zip下载解压包解压.
 # 3.双击AV.xcworkspace
