@@ -188,6 +188,7 @@
 		C8FBCB4D2115EB00001ED565 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C8FBCB8A2115F421001ED565 /* test.cer */,
 				C8FBCB4E2115EB24001ED565 /* AVPrefixHeader.pch */,
 			);
 			path = "Supporting Files";
@@ -520,7 +521,6 @@
 				C8FBCBB021160670001ED565 /* Model */,
 				C8FBCBAE2115F8A1001ED565 /* Gobal */,
 				C8FBCB8C2115F756001ED565 /* BaseViewController */,
-				C8FBCB8A2115F421001ED565 /* test.cer */,
 				C8FBCB4F2115EBE5001ED565 /* API */,
 				C8FBCB4D2115EB00001ED565 /* Supporting Files */,
 				CC92BF7E2115CDE700178644 /* AppDelegate.h */,
