@@ -1,5 +1,8 @@
 # AV
-AV资源查找，播放app
+## 全球AV资源查找，播放的iOS App,资源来自知名的视频网站JAV.
+
+# Future
+## 在App内,内置VPN,使用者更加方便,没有障碍.
 
 # 小白教程（前提需要装有osx系统的电脑，或者装有osx的Mac）
 ## 1.从osx系统的app store上下载xcode,并且运行一次.
