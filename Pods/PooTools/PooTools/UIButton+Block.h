@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-typedef void (^TouchedBlock)(NSInteger tag);
+typedef void (^TouchedBlock)(UIButton *sender);
 
 @interface UIButton (Block)
 -(void)addActionHandler:(TouchedBlock)touchHandler;
@@ -22,5 +22,4 @@ typedef void (^TouchedBlock)(NSInteger tag);
 
 @interface UIButton (EX)//按钮图片上文字下
 - (void)verticalImageAndTitle:(CGFloat)spacing;
-
 @end

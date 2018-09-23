@@ -184,7 +184,7 @@
         make.bottom.equalTo(self.view);
     }];
     
-    PooTagsLabel *tagV = [[PooTagsLabel alloc] initWithFrame:CGRectMake(0, 0, kSCREEN_WIDTH, 0) tagsArray:self.tagArrs config:[self tagConfig] wihtSection:0];
+    PooTagsLabel *tagV = [[PooTagsLabel alloc] initWithTagsArray:self.tagArrs config:[self tagConfig] wihtSection:0];
     [self.view addSubview:tagV];
     [tagV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(self.view);

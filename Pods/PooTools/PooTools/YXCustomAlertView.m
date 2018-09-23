@@ -13,11 +13,7 @@
 
 @interface YXCustomAlertView()
 {
-    UIFont *viewFont;
     UIColor *alertTitleColor;
-    UIColor *alertBottomButtonColor;
-    UIColor *verLineColor;
-    UIView *verLine;
 }
 
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -25,17 +21,30 @@
 @property (nonatomic, copy) YXCustomAlertViewClickBlock clickBlock;
 @property (nonatomic, copy) YXCustomAlertViewDidDismissBlock didDismissBlock;
 @property (nonatomic, strong) UIView *superViews;
+@property (nonatomic, strong) UIColor *alertBottomButtonColor;
+@property (nonatomic, strong) UIFont *viewFont;
+@property (nonatomic, strong) UIColor *verLineColor;
+@property (nonatomic, strong) NSMutableArray *bottomBtnArr;
+@property (nonatomic, strong) NSString *titleStr;
 @end
 
 
 @implementation YXCustomAlertView
 
++(CGFloat)titleAndBottomViewNormalH
+{
+    return TitleViewH + BottomButtonH;
+}
 
-- (instancetype) initAlertViewWithFrame:(CGRect)frame andSuperView:(UIView *)superView alertTitle:(NSString *)title withButtonAndTitleFont:(UIFont *)btFont titleColor:(UIColor * _Nonnull)tColor bottomButtonTitleColor:(UIColor * _Nullable )bbtColor verLineColor:(UIColor * _Nullable )vlColor moreButtonTitleArray:(NSArray * _Nonnull)mbtArray viewTag:(NSInteger)tag setCustomView:(YXCustomAlertViewSetCustomViewBlock)setViewBlock clickAction:(YXCustomAlertViewClickBlock)clickBlock didDismissBlock:(YXCustomAlertViewDidDismissBlock)didDismissBlock
+- (instancetype) initAlertViewWithSuperView:(UIView *)superView alertTitle:(NSString *)title withButtonAndTitleFont:(UIFont *)btFont titleColor:(UIColor * _Nonnull)tColor bottomButtonTitleColor:(UIColor * _Nullable )bbtColor verLineColor:(UIColor * _Nullable )vlColor moreButtonTitleArray:(NSArray * _Nonnull)mbtArray viewTag:(NSInteger)tag setCustomView:(YXCustomAlertViewSetCustomViewBlock)setViewBlock clickAction:(YXCustomAlertViewClickBlock)clickBlock didDismissBlock:(YXCustomAlertViewDidDismissBlock)didDismissBlock
 {
     self = [super init];
     
     if (self) {
+        
+        self.bottomBtnArr = [NSMutableArray array];
+        [self.bottomBtnArr addObjectsFromArray:mbtArray];
+        
         self.clickBlock = clickBlock;
         self.didDismissBlock = didDismissBlock;
         self.superViews = superView;
@@ -43,130 +52,186 @@
         
         self.middleView.frame = superView.frame;
         [superView addSubview:_middleView];
-        viewFont = btFont;
+        [_middleView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.right.top.bottom.equalTo(superView);
+        }];
+        
+        self.viewFont = btFont;
         alertTitleColor = tColor;
-        alertBottomButtonColor = bbtColor;
-        verLineColor = vlColor;
+        self.alertBottomButtonColor = bbtColor;
+        self.verLineColor = vlColor;
         self.tag = tag;
+        self.titleStr = title;
         
         UITapGestureRecognizer *tapBackgroundView = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dissMiss)];
         tapBackgroundView.numberOfTouchesRequired = 1;
         tapBackgroundView.numberOfTapsRequired = 1;
         [_middleView addGestureRecognizer:tapBackgroundView];
 
-        
         self.backgroundColor = [UIColor whiteColor];
         self.layer.cornerRadius = 8;
         
+        [self.superViews addSubview:self];
+
         self.titleLabel.text = title;
         [self addSubview:_titleLabel];
 
         self.customView = [UIView new];
         [self addSubview:self.customView];
-        
-        if (btFont.pointSize*title.length > frame.size.width) {
-            self.frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height+TitleViewH);
+
+        if (btFont.pointSize*title.length > self.frame.size.width) {
             [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.offset(frame.size.width);
                 make.height.offset(TitleViewH*2);
-                make.top.equalTo(self);
-                make.left.equalTo(self);
+                make.top.left.right.equalTo(self);
             }];
             [self.customView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.offset(frame.size.width);
                 make.top.equalTo(self.titleLabel.mas_bottom);
                 make.bottom.equalTo(self).offset(-BottomButtonH);
-                make.left.equalTo(self);
+                make.left.right.equalTo(self);
             }];
-
+            
         }
         else{
-            self.frame = frame;
             [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.offset(frame.size.width);
                 make.height.offset(TitleViewH);
-                make.top.equalTo(self);
-                make.left.equalTo(self);
+                make.left.top.right.equalTo(self);
             }];
             [self.customView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.offset(frame.size.width);
                 make.top.equalTo(self.titleLabel.mas_bottom);
                 make.bottom.equalTo(self).offset(-BottomButtonH);
-                make.left.equalTo(self);
+                make.left.right.equalTo(self);
             }];
         }
-        self.center = CGPointMake([UIScreen mainScreen].bounds.size.width/2, superView.frame.size.height/2);
 
         
         if (self.setBlock) {
             self.setBlock(self);
         }
-        
-        CGFloat btnW = (frame.size.width - (mbtArray.count-1)*0.5)/mbtArray.count;
-        for (int i = 0 ; i < mbtArray.count; i++) {
-            UIButton *cancelBtn =  [UIButton buttonWithType:UIButtonTypeCustom];
-            cancelBtn.frame = frame;
-            if (alertBottomButtonColor == nil) {
-                [cancelBtn setTitleColor:kRGBColor(0 , 84, 166) forState:UIControlStateNormal];
-            }
-            else
-            {
-                [cancelBtn setTitleColor:alertBottomButtonColor forState:UIControlStateNormal];
-            }
-            [cancelBtn setTitle:mbtArray[i] forState:UIControlStateNormal];
-            cancelBtn.titleLabel.font = viewFont;
-            cancelBtn.tag = i;
-            [cancelBtn addTarget:self action:@selector(confirmBtnClick:) forControlEvents:UIControlEventTouchUpInside];
-            [self addSubview:cancelBtn];
-            [cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.width.offset(btnW);
-                make.top.equalTo(self.customView.mas_bottom);
-                make.bottom.equalTo(self);
-                make.left.offset(btnW*i+1*i);
-            }];
-            
-        }
-        
-        if (mbtArray.count != 1) {
-            for (int j = 0; j < (mbtArray.count-1); j++) {
-                verLine = [UIView new];
-                if (verLineColor == nil) {
-                    verLine.backgroundColor = kRGBColor(213, 213, 215);
-                }
-                else
-                {
-                    verLine.backgroundColor = verLineColor;
-                }
-                [self addSubview:verLine];
-                [verLine mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.left.offset(btnW+0.5*j+btnW*j);
-                    make.top.equalTo(self.customView.mas_bottom);
-                    make.bottom.equalTo(self);
-                    make.width.offset(0.5);
-                }];
-            }
-        }
-
-        UIView *horLine = [UIView new];
-        horLine.backgroundColor = verLine.backgroundColor;
-        [self addSubview:horLine];
-        [horLine mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.right.equalTo(self);
-            make.top.equalTo(self.customView.mas_bottom);
-            make.height.offset(0.5);
-        }];
-
+        [self setBottomView];
     }
     
     return self;
+}
+
+-(void)setBottomView
+{
+    CGFloat btnW = (self.frame.size.width - (self.bottomBtnArr.count-1)*0.5)/self.bottomBtnArr.count;
+    for (int i = 0 ; i < self.bottomBtnArr.count; i++) {
+        UIButton *cancelBtn =  [UIButton buttonWithType:UIButtonTypeCustom];
+        [cancelBtn setTitleColor:self.alertBottomButtonColor ? self.alertBottomButtonColor : kRGBColor(0 , 84, 166) forState:UIControlStateNormal];
+        [cancelBtn setTitle:self.bottomBtnArr[i] forState:UIControlStateNormal];
+        cancelBtn.titleLabel.font = self.viewFont;
+        cancelBtn.tag = 100+i;
+        [cancelBtn addTarget:self action:@selector(confirmBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:cancelBtn];
+        [cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.offset(btnW);
+            make.top.equalTo(self.customView.mas_bottom);
+            make.bottom.equalTo(self);
+            make.left.offset(btnW*i+1*i);
+        }];
+    }
     
+    if (self.bottomBtnArr.count != 1) {
+        for (int j = 0; j < (self.bottomBtnArr.count-1); j++) {
+            UIView *verLine = [UIView new];
+            verLine.backgroundColor = self.verLineColor ? self.verLineColor : kRGBColor(213, 213, 215);
+            verLine.tag = 200 + j;
+            [self addSubview:verLine];
+            [verLine mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.offset(btnW+0.5*j+btnW*j);
+                make.top.equalTo(self.customView.mas_bottom);
+                make.bottom.equalTo(self);
+                make.width.offset(0.5);
+            }];
+        }
+    }
+
+    
+    UIView *horLine = [UIView new];
+    horLine.backgroundColor = self.verLineColor ? self.verLineColor : kRGBColor(213, 213, 215);
+    horLine.tag = 1000;
+    [self addSubview:horLine];
+    [horLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.equalTo(self);
+        make.top.equalTo(self.customView.mas_bottom);
+        make.height.offset(0.5);
+    }];
+}
+
+-(void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    CGFloat textH;
+    UIDeviceOrientation o = [[UIDevice currentDevice] orientation];
+    switch (o) {
+        case UIDeviceOrientationLandscapeLeft:      // Device oriented horizontally, home button on the right
+        {
+            textH = TitleViewH;
+        }
+            break;
+        case UIDeviceOrientationLandscapeRight:      // Device oriented horizontally, home button on the left
+        {
+            textH = TitleViewH;
+        }
+            break;
+        default:
+        {
+            if (self.viewFont.pointSize*self.titleLabel.text.length > self.frame.size.width) {
+                textH = TitleViewH*2;
+            }
+            else
+            {
+                textH = TitleViewH;
+            }
+        }
+            break;
+    }
+    [self.titleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.height.offset(textH);
+        make.top.left.right.equalTo(self);
+    }];
+    [self.customView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.titleLabel.mas_bottom);
+        make.bottom.equalTo(self).offset(-BottomButtonH);
+        make.left.right.equalTo(self);
+    }];
+    CGFloat btnW = (self.frame.size.width - (self.bottomBtnArr.count-1)*0.5)/self.bottomBtnArr.count;
+    for (int i = 0; i < self.bottomBtnArr.count; i++) {
+        UIButton *cancelBtn =  (UIButton *)[self viewWithTag:100+i];
+        [cancelBtn mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.width.offset(btnW);
+            make.top.equalTo(self.customView.mas_bottom);
+            make.bottom.equalTo(self);
+            make.left.offset(btnW*i+1*i);
+        }];
+    }
+    
+    for (int j = 0; j < (self.bottomBtnArr.count-1); j++)
+    {
+        UIView *verLine =  (UIView *)[self viewWithTag:200+j];
+        [verLine mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.left.offset(btnW+0.5*j+btnW*j);
+            make.top.equalTo(self.customView.mas_bottom);
+            make.bottom.equalTo(self);
+            make.width.offset(0.5);
+        }];
+    }
+    
+    UIView *horLine = (UIView *)[self viewWithTag:1000];
+    [horLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.equalTo(self);
+        make.top.equalTo(self.customView.mas_bottom);
+        make.height.offset(0.5);
+    }];
 }
 
 #pragma mark - Action
 - (void)confirmBtnClick:(UIButton *)sender
 {
     if (self.clickBlock) {
-        self.clickBlock(self, sender.tag);
+        self.clickBlock(self, sender.tag-100);
     }
 }
 
@@ -208,16 +273,14 @@
     
     if (_titleLabel == nil) {
         _titleLabel = [[UILabel alloc] init];
-        _titleLabel.font = viewFont;
-        _titleLabel.textColor = alertTitleColor;
+        _titleLabel.font = self.viewFont;
+        _titleLabel.textColor = alertTitleColor ? alertTitleColor : kRGBColor(0 , 84, 166);
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         _titleLabel.numberOfLines = 0;
-        _titleLabel.backgroundColor = [UIColor clearColor];
+        _titleLabel.backgroundColor = kClearColor;
     }
     
     return _titleLabel;
 }
-
-
 @end

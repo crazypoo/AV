@@ -49,6 +49,11 @@ static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageVie
     }
 }
 
+- (void)setSelectedIndex:(NSUInteger)selectedIndex {
+    [super setSelectedIndex:selectedIndex];
+    [self updateSelectionStatusIfNeededForTabBarController:nil shouldSelectViewController:nil];
+}
+
 - (void)setViewDidLayoutSubViewsBlock:(CYLViewDidLayoutSubViewsBlock)viewDidLayoutSubviewsBlock {
     _viewDidLayoutSubviewsBlock = viewDidLayoutSubviewsBlock;
 }
@@ -359,8 +364,7 @@ static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageVie
                   normalImageInfo:(id)normalImageInfo
                 selectedImageInfo:(id)selectedImageInfo
           titlePositionAdjustment:(UIOffset)titlePositionAdjustment
-                      imageInsets:(UIEdgeInsets)imageInsets
-{
+                      imageInsets:(UIEdgeInsets)imageInsets {
     viewController.tabBarItem.title = title;
     if (normalImageInfo) {
         UIImage *normalImage = [self getImageFromImageInfo:normalImageInfo];
@@ -450,13 +454,19 @@ static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageVie
 - (void)updateSelectionStatusIfNeededForTabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
     UIButton *plusButton = CYLExternPlusButton;
     CYLTabBarController *tabBarViewController = [[CYLPlusChildViewController cyl_getViewControllerInsteadOfNavigationController] cyl_tabBarController];
-   NSArray *viewControllers = tabBarViewController.viewControllers;
-    BOOL isAdded = [self isPlusViewControllerAdded:viewControllers];
-    BOOL hasPlusChildViewController = isAdded;
-    BOOL isNotCurrentViewController = ![self isEqualViewController:viewController compairedViewController:CYLPlusChildViewController];
-    BOOL shouldConfigureSelectionStatus = (hasPlusChildViewController && isNotCurrentViewController);
+    NSArray *viewControllers = tabBarViewController.viewControllers;
+    BOOL hasPlusChildViewController = [self isPlusViewControllerAdded:viewControllers];
+    if (!viewController) {
+        viewController = tabBarViewController.selectedViewController;
+    }
+     BOOL isCurrentViewController = [self isEqualViewController:viewController compairedViewController:CYLPlusChildViewController];
+    BOOL shouldConfigureSelectionStatus = (!isCurrentViewController);
     if (shouldConfigureSelectionStatus) {
         plusButton.selected = NO;
+        [self didSelectControl:nil];
+    } else {
+        plusButton.selected = YES;
+        [self didSelectControl:plusButton];
     }
 }
 
@@ -483,7 +493,7 @@ static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageVie
     if ([self.delegate respondsToSelector:actin]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [self.delegate performSelector:actin withObject:self withObject:control];
+        [self.delegate performSelector:actin withObject:self withObject:control ?: self.selectedViewController.tabBarItem.cyl_tabButton];
 #pragma clang diagnostic pop
     }
 }

@@ -571,7 +571,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = AV;
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "邓杰豪";
 				TargetAttributes = {
 					CC92BF7A2115CDE700178644 = {
@@ -890,6 +890,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 426C484B5F7D851A75B49420 /* Pods-AV.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FA9SE57VK7;
@@ -965,6 +966,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FB05E20B235223D46C459C9D /* Pods-AV.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FA9SE57VK7;
