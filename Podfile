@@ -2,5 +2,5 @@ platform :ios, '8.0'
 use_frameworks!
 
 target 'AV' do
-  pod 'PooTools','1.7.10'
+  pod 'PooTools','1.8.0'
 end
