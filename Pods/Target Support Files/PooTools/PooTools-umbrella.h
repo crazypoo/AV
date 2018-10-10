@@ -86,6 +86,7 @@
 #import "UIView+LayoutSubviewsCallback.h"
 #import "UIView+ModifyFrame.h"
 #import "UIView+ViewRectCorner.h"
+#import "UIView+ViewShaking.h"
 #import "UIViewController+TopBarMessage.h"
 #import "Utils.h"
 #import "WMHub.h"
