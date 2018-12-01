@@ -3,7 +3,7 @@
 //  CYLTabBarController
 //
 //  v1.16.0 Created by 微博@iOS程序犭袁 ( http://weibo.com/luohanchenyilong/ ) on 10/20/15.
-//  Copyright © 2015 https://github.com/ChenYilong . All rights reserved.
+//  Copyright © 2018 https://github.com/ChenYilong . All rights reserved.
 //
 
 #import "CYLTabBarController.h"
@@ -20,6 +20,8 @@ NSString *const CYLTabBarItemTitlePositionAdjustment = @"CYLTabBarItemTitlePosit
 NSUInteger CYLTabbarItemsCount = 0;
 NSUInteger CYLPlusButtonIndex = 0;
 CGFloat CYLTabBarItemWidth = 0.0f;
+CGFloat CYLTabBarHeight = 0.0f;
+
 NSString *const CYLTabBarItemWidthDidChangeNotification = @"CYLTabBarItemWidthDidChangeNotification";
 static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageViewDefaultOffsetContext;
 
@@ -84,6 +86,11 @@ static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageVie
         frame.origin.y = self.view.frame.size.height - tabBarHeight;
         frame;
     });
+}
+
+- (void)setTabBarHeight:(CGFloat)tabBarHeight {
+    _tabBarHeight = tabBarHeight;
+    CYLTabBarHeight = tabBarHeight;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
@@ -453,20 +460,15 @@ static void * const CYLTabImageViewDefaultOffsetContext = (void*)&CYLTabImageVie
 
 - (void)updateSelectionStatusIfNeededForTabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
     UIButton *plusButton = CYLExternPlusButton;
-    CYLTabBarController *tabBarViewController = [[CYLPlusChildViewController cyl_getViewControllerInsteadOfNavigationController] cyl_tabBarController];
-    NSArray *viewControllers = tabBarViewController.viewControllers;
-    BOOL hasPlusChildViewController = [self isPlusViewControllerAdded:viewControllers];
     if (!viewController) {
-        viewController = tabBarViewController.selectedViewController;
+        viewController = self.selectedViewController;
     }
      BOOL isCurrentViewController = [self isEqualViewController:viewController compairedViewController:CYLPlusChildViewController];
     BOOL shouldConfigureSelectionStatus = (!isCurrentViewController);
     if (shouldConfigureSelectionStatus) {
         plusButton.selected = NO;
-        [self didSelectControl:nil];
     } else {
         plusButton.selected = YES;
-        [self didSelectControl:plusButton];
     }
 }
 

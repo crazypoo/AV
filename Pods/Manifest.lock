@@ -14,13 +14,16 @@ PODS:
   - AFNetworking/Serialization (3.2.1)
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
-  - CYLTabBarController (1.17.16)
+  - CYLTabBarController (1.17.22)
   - DHSmartScreenshot (1.3.1)
   - DZNEmptyDataSet (1.8.1)
   - FDFullscreenPopGesture (1.1)
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
+  - GCDWebServer (3.4.2):
+    - GCDWebServer/Core (= 3.4.2)
+  - GCDWebServer/Core (3.4.2)
   - HTAutocompleteTextField (1.3.2)
   - IQKeyboardManager (6.2.0)
   - JMHoledView (0.2.1)
@@ -32,13 +35,14 @@ PODS:
   - MJExtension (3.0.15.1)
   - MJRefresh (3.1.15.7)
   - MYBlurIntroductionView (1.0.3)
-  - PooTools (1.8.2):
+  - PooTools (1.8.22):
     - AFNetworking
     - CYLTabBarController
     - DHSmartScreenshot
     - DZNEmptyDataSet
     - FDFullscreenPopGesture
     - FMDB
+    - GCDWebServer
     - HTAutocompleteTextField
     - IQKeyboardManager
     - JMHoledView
@@ -50,6 +54,7 @@ PODS:
     - MYBlurIntroductionView
     - pop
     - SDWebImage
+    - SSZipArchive
     - TextFieldEffects
     - TOWebViewController
     - UINavigation-SXFixSpace
@@ -57,22 +62,23 @@ PODS:
     - "UITextField+Shake"
     - "UIViewController+Swizzled"
     - YCXMenu
-  - pop (1.0.10)
+  - pop (1.0.12)
   - SDWebImage (4.4.2):
     - SDWebImage/Core (= 4.4.2)
   - SDWebImage/Core (4.4.2)
-  - TextFieldEffects (1.5.0)
+  - SSZipArchive (2.1.4)
+  - TextFieldEffects (1.5.1)
   - TOWebViewController (2.2.8):
     - TOWebViewController/Core (= 2.2.8)
   - TOWebViewController/Core (2.2.8)
-  - UINavigation-SXFixSpace (1.0.7)
+  - UINavigation-SXFixSpace (1.0.9)
   - "UITableView+FDTemplateLayoutCell (1.6)"
   - "UITextField+Shake (1.2.1)"
   - "UIViewController+Swizzled (1.4)"
   - YCXMenu (0.0.11)
 
 DEPENDENCIES:
-  - PooTools (= 1.8.2)
+  - PooTools (= 1.8.22)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -82,6 +88,7 @@ SPEC REPOS:
     - DZNEmptyDataSet
     - FDFullscreenPopGesture
     - FMDB
+    - GCDWebServer
     - HTAutocompleteTextField
     - IQKeyboardManager
     - JMHoledView
@@ -94,6 +101,7 @@ SPEC REPOS:
     - PooTools
     - pop
     - SDWebImage
+    - SSZipArchive
     - TextFieldEffects
     - TOWebViewController
     - UINavigation-SXFixSpace
@@ -104,11 +112,12 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  CYLTabBarController: fb72c648645336953d522407892c4f61b7b3f898
+  CYLTabBarController: 35784c2969383583d11cc56ff5abce078f19d94a
   DHSmartScreenshot: ee749048bd7126c4826748f98df3a4adc6ad6c78
   DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
   FDFullscreenPopGesture: a8a620179e3d9c40e8e00256dcee1c1a27c6d0f0
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  GCDWebServer: 8d67ee9f634b4bb91eb4b8aee440318a5fc6debd
   HTAutocompleteTextField: ce809f04875e843e20f214ab973bb496ba7a93b1
   IQKeyboardManager: 6194101620b73af5e67900b8f89707a99de0b804
   JMHoledView: fe5b140dd053a58ce551f3c7cbd674602d9aca23
@@ -118,17 +127,18 @@ SPEC CHECKSUMS:
   MJExtension: 19bc33ce2eee2d319760f5622562cf581a6ff756
   MJRefresh: 697f8ec75ebdbe9207767bb682cf0f51b0d8a41f
   MYBlurIntroductionView: b12651c25574580472ff34989a4c5b81c157009f
-  PooTools: aae2640dc7f15c455acea49cbc2c074b54b6fbbb
-  pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
+  PooTools: d5555e5e63b7a157675d3474be64a1464fe64224
+  pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
   SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
-  TextFieldEffects: bf9e9cac7cb1a97d632fbcd0724bb6347dd86633
+  SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
+  TextFieldEffects: 7d372f58aeaf9acd9626bbf962680aef926b085d
   TOWebViewController: 953a24619d32f7aa1d9d4098a74885a9236f7348
-  UINavigation-SXFixSpace: 02323ab6d50f3719bf0829afa22995acb9b2486b
+  UINavigation-SXFixSpace: d5cf69960794667c1315167d53658a89193ccba4
   "UITableView+FDTemplateLayoutCell": 5c949b4a5059c404b442926c0e80f81d10a2d66f
   "UITextField+Shake": 298ac5a0f239d731bdab999b19b628c956ca0ac3
   "UIViewController+Swizzled": 1cd9397598ede6930f94fbcac4b43d63c7aa0dbb
   YCXMenu: 6003bcd20d8ac72e3eb3c442c97ed21948c6dc1f
 
-PODFILE CHECKSUM: 8f2d00e840c9ac67db4d20130814539f1e5732ff
+PODFILE CHECKSUM: 64a68213334659ffec8580a86b90eb488ad9aa63
 
 COCOAPODS: 1.5.2

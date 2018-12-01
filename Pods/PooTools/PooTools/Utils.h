@@ -41,9 +41,34 @@ typedef NS_ENUM(NSInteger,ToolsUrlStringVideoType){
     ToolsUrlStringVideoTypeUNKNOW
 };
 
+typedef NS_ENUM(NSInteger,CheckNowTimeAndPastTimeRelationships){
+    CheckNowTimeAndPastTimeRelationshipsExpire = 0,
+    CheckNowTimeAndPastTimeRelationshipsNormal,
+    CheckNowTimeAndPastTimeRelationshipsError
+};
+
 static NSString *LANGUAGEENGLISH = @"LANGUAGEENGLISH";
 static NSString *LANGUAGEANDCHINESE = @"LANGUAGEANDCHINESE";
 static NSString *LANGUAGECHINESE = @"LANGUAGECHINESE";
+
+/*! @brief 判断iPhone X / XS / XS MAX / XR
+ */
+static inline BOOL isIPhoneXSeries() {
+    BOOL iPhoneXSeries = NO;
+    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
+        return iPhoneXSeries;
+    }
+    
+    if (@available(iOS 11.0, *)) {
+        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
+        if (mainWindow.safeAreaInsets.bottom > 0.0) {
+            iPhoneXSeries = YES;
+        }
+    }
+    
+    return iPhoneXSeries;
+}
+
 @interface Utils : NSObject
 
 #pragma mark ------> UIImageView
@@ -141,6 +166,10 @@ static NSString *LANGUAGECHINESE = @"LANGUAGECHINESE";
  */
 +(NSString *)getYMD;
 
+/*! @brief 时间戳
+ */
++(NSString *)getTimeStamp;
+
 /*! @brief 某个时间的某时间之后或者之前
  */
 +(NSDate *)fewMonthLater:(NSInteger)month
@@ -169,6 +198,13 @@ static NSString *LANGUAGECHINESE = @"LANGUAGECHINESE";
  */
 +(NSMutableDictionary *)getCurrentDeviceLanguageInIOSWithDic;
 
+/*! @brief 用某个时间戳来判断当前时间与服务器获取的时间对比,是否快到期
+ */
++(CheckNowTimeAndPastTimeRelationships)checkContractDateExpireContractDate:(NSString *)contractDate expTimeStamp:(int)timeStamp;
+
+/*! @brief 用某个时间戳来判断当前时间与时间的对比,是否快到期
+ */
++(CheckNowTimeAndPastTimeRelationships)checkStartDateExpireEndDataWithStartDate:(NSString *)sD withEndDate:(NSString *)eD expTimeStamp:(int)timeStamp;
 #pragma mark ------> 图片
 /*! @brief 获取视频第一帧
  */
@@ -192,6 +228,11 @@ static NSString *LANGUAGECHINESE = @"LANGUAGECHINESE";
  */
 +(UIImage *)createQRImageWithString:(NSString *)string
                            withSize:(CGFloat)size;
+
+/*! @brief 图片按比例大小转换
+ */
++(UIImage *)scaleImage:(UIImage *)image
+               toScale:(float)scaleSize;
 
 #pragma mark ------> JSON
 /*! @brief Json字符串转字典
@@ -258,4 +299,9 @@ static NSString *LANGUAGECHINESE = @"LANGUAGECHINESE";
 /*! @brief 判断是否白天
  */
 +(BOOL)isNowDayTime;
+
+/*! @brief 判断是否存在Emoji
+ */
++(BOOL)stringContainsEmoji:(NSString *)string;
+
 @end

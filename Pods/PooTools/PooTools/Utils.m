@@ -151,10 +151,13 @@
     dispatch_resume(_timer);
 }
 
+#pragma mark ------> 时间
 +(NSString *)formateTime:(NSDate*)date
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
     [formatter setDateFormat:@"HH:mm:ss"];
+    NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"Asia/Shanghai"];
+    [formatter setTimeZone:timeZone];
     NSString *dateTime = [formatter stringFromDate:date];
     return dateTime;
 }
@@ -166,6 +169,8 @@
     [formatter setDateStyle:NSDateFormatterMediumStyle];
     [formatter setTimeStyle:NSDateFormatterShortStyle];
     [formatter setDateFormat:@"YYYY-MM-dd hh:mm:ss"];
+    NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"Asia/Shanghai"];
+    [formatter setTimeZone:timeZone];
     NSString *dateTime = [formatter stringFromDate:date];
     return dateTime;
 }
@@ -177,10 +182,65 @@
     [formatter setDateStyle:NSDateFormatterMediumStyle];
     [formatter setTimeStyle:NSDateFormatterShortStyle];
     [formatter setDateFormat:@"YYYY-MM-dd"];
+    NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"Asia/Shanghai"];
+    [formatter setTimeZone:timeZone];
     NSString *dateTime = [formatter stringFromDate:date];
     return dateTime;
 }
 
++(NSString *)getTimeStamp
+{
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateStyle:NSDateFormatterMediumStyle];
+    [formatter setTimeStyle:NSDateFormatterShortStyle];
+    [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
+    NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"Asia/Shanghai"];
+    [formatter setTimeZone:timeZone];
+    NSDate *date = [NSDate date];
+    NSString *timeSp = [NSString stringWithFormat:@"%ld", (long)[date timeIntervalSince1970]];
+    return timeSp;
+}
+
++(CheckNowTimeAndPastTimeRelationships)checkContractDateExpireContractDate:(NSString *)contractDate expTimeStamp:(int)timeStamp
+{
+    NSDateFormatter *formater = [[NSDateFormatter alloc] init];
+    [formater setDateFormat:@"yyyy-MM-dd"];
+    NSDate *create = [formater dateFromString:contractDate];
+    NSDate *now = [NSDate date];
+    NSTimeInterval timeDifference = [create timeIntervalSinceDate:now];
+    float thirty = [[NSNumber numberWithInt: timeStamp] floatValue];
+    if (timeDifference - thirty <= 0.000000)
+    {
+        return CheckNowTimeAndPastTimeRelationshipsExpire;
+    }
+    else
+    {
+        return CheckNowTimeAndPastTimeRelationshipsNormal;
+    }
+    return CheckNowTimeAndPastTimeRelationshipsError;
+}
+
++(CheckNowTimeAndPastTimeRelationships)checkStartDateExpireEndDataWithStartDate:(NSString *)sD withEndDate:(NSString *)eD expTimeStamp:(int)timeStamp
+{
+    NSDateFormatter *formater = [[NSDateFormatter alloc] init];
+    [formater setDateFormat:@"yyyy-MM-dd"];
+    NSDate *startDate = [formater dateFromString:sD];
+    NSDate *endDate = [formater dateFromString:eD];
+    
+    NSTimeInterval timeDifference = [endDate timeIntervalSinceDate:startDate];
+    float thirty = [[NSNumber numberWithInt:timeStamp] floatValue];
+    if (timeDifference - thirty <= 0.000000)
+    {
+        return CheckNowTimeAndPastTimeRelationshipsExpire;
+    }
+    else
+    {
+        return CheckNowTimeAndPastTimeRelationshipsNormal;
+    }
+    return CheckNowTimeAndPastTimeRelationshipsError;
+}
+
+#pragma mark ------> 获取地区
 +(NSString *)getCurrentApplicationLocale
 {
     NSLocale *locale = [NSLocale currentLocale];
@@ -406,6 +466,15 @@
         return ToolsUrlStringVideoType3GP;
     }
     return ToolsUrlStringVideoTypeUNKNOW;
+}
+
++(UIImage *)scaleImage:(UIImage *)image toScale:(float)scaleSize
+{
+    UIGraphicsBeginImageContext(CGSizeMake(image.size.width * scaleSize, image.size.height * scaleSize));
+    [image drawInRect:CGRectMake(0, 0, image.size.width * scaleSize, image.size.height * scaleSize)];
+    UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return scaledImage;
 }
 
 #pragma mark ------> JSON
@@ -753,9 +822,10 @@
 +(NSDate *)fewMonthLater:(NSInteger)month fromNow:(NSDate *)thisTime
 {
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *comps = nil;
-    comps = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:thisTime];
-    NSDateComponents *adcomps = [[NSDateComponents alloc] init];
+    //FIX:修复代码没使用的地方
+//    NSDateComponents *comps = nil;
+//    comps = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:thisTime];
+    NSDateComponents *adcomps = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:thisTime];
     [adcomps setYear:0];
     [adcomps setMonth:month];
     [adcomps setDay:0];
@@ -790,6 +860,8 @@
     size_t height = CGRectGetHeight(extent) * scale;
     CGColorSpaceRef cs = CGColorSpaceCreateDeviceGray();
     CGContextRef bitmapRef = CGBitmapContextCreate(nil, width, height, 8, 0, cs, (CGBitmapInfo)kCGImageAlphaNone);
+    //FIX:释放
+    CFRelease(cs);
     CIContext *context = [CIContext contextWithOptions:nil];
     CGImageRef bitmapImage = [context createCGImage:image fromRect:extent];
     CGContextSetInterpolationQuality(bitmapRef, kCGInterpolationNone);
@@ -800,7 +872,12 @@
     CGImageRef scaledImage = CGBitmapContextCreateImage(bitmapRef);
     CGContextRelease(bitmapRef);
     CGImageRelease(bitmapImage);
-    return [UIImage imageWithCGImage:scaledImage];
+    
+    UIImage *newImage = [UIImage imageWithCGImage:scaledImage];
+    //FIX:释放
+    CFRelease(scaledImage);
+
+    return newImage;
 }
 
 #pragma mark ------>华氏转摄氏/摄氏转华氏
@@ -856,4 +933,45 @@
         return YES;
     }
 }
+
+#pragma mark ------>String
++(BOOL)stringContainsEmoji:(NSString *)string
+{
+    __block BOOL returnValue = NO;
+    
+    [string enumerateSubstringsInRange:NSMakeRange(0, [string length])
+                               options:NSStringEnumerationByComposedCharacterSequences
+                            usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                                const unichar hs = [substring characterAtIndex:0];
+                                if (0xd800 <= hs && hs <= 0xdbff) {
+                                    if (substring.length > 1) {
+                                        const unichar ls = [substring characterAtIndex:1];
+                                        const int uc = ((hs - 0xd800) * 0x400) + (ls - 0xdc00) + 0x10000;
+                                        if (0x1d000 <= uc && uc <= 0x1f77f) {
+                                            returnValue = YES;
+                                        }
+                                    }
+                                } else if (substring.length > 1) {
+                                    const unichar ls = [substring characterAtIndex:1];
+                                    if (ls == 0x20e3) {
+                                        returnValue = YES;
+                                    }
+                                } else {
+                                    if (0x2100 <= hs && hs <= 0x27ff) {
+                                        returnValue = YES;
+                                    } else if (0x2B05 <= hs && hs <= 0x2b07) {
+                                        returnValue = YES;
+                                    } else if (0x2934 <= hs && hs <= 0x2935) {
+                                        returnValue = YES;
+                                    } else if (0x3297 <= hs && hs <= 0x3299) {
+                                        returnValue = YES;
+                                    } else if (hs == 0xa9 || hs == 0xae || hs == 0x303d || hs == 0x3030 || hs == 0x2b55 || hs == 0x2b1c || hs == 0x2b1b || hs == 0x2b50) {
+                                        returnValue = YES;
+                                    }
+                                }
+                            }];
+    
+    return returnValue;
+}
+
 @end
